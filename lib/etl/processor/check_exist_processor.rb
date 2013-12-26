@@ -55,7 +55,7 @@ module ETL #:nodoc:
       def process(row)
         return row unless should_check?
         conn = ETL::Engine.connection(target)
-        q = "SELECT TOP 1 * FROM #{table_name} WHERE "
+        q = "SELECT * FROM #{table_name} WHERE "
         conditions = []
         ensure_columns_available_in_row!(row, columns, 'for existence check')
         row.each do |k,v| 
@@ -64,6 +64,7 @@ module ETL #:nodoc:
           end
         end
         q << conditions.join(" AND ")
+        q << " LIMIT 1"
       
         result = conn.select_one(q)
         return row if result.nil?
